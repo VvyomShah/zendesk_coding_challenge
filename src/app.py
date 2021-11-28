@@ -1,19 +1,39 @@
-from flask import Flask
-import urllib.request
+import requests
+import getpass
 import json
 
-app = Flask(__name__)
+from werkzeug.wrappers import response
 
-@app.route("/")
-def hello():
-    return "<p> Hello World </p>"
+class Authenticate:
 
-def getToken():
-    pass
+    def __init__(self):
+        self.SUBDOMAIN = 'https://zccvvyomshah.zendesk.com'
+        self.USERNAME = None
+        self.PASSWORD = None
+        self.getCredentials()
 
-def getTicket():
-    pass
+    def getCredentials(self):
+        get_username = getpass.getuser()
+        get_password = getpass.getpass()
+
+        try:
+            self.USERNAME = getpass.getpass('Username: ', get_username)
+            self.PASSWORD = getpass.getpass('Password: ', get_password)
+
+        except Exception as error:
+            print('ERROR', error)
 
 
-if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+class Tickets:
+
+    def __init__(self):
+        pass
+
+    def getTickets(self, APIUrl, username, password):
+            response = requests.get(APIUrl, auth=(username, password))
+
+            if response.status_code != 200:
+                print('Error')
+                exit()
+            
+            
