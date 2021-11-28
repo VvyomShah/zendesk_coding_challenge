@@ -11,21 +11,17 @@ class Authenticate:
         self.SUBDOMAIN = None
         self.USERNAME = None
         self.PASSWORD = None
-        # self.getCredentials()
+        self.getCredentials()
 
-        self.SUBDOMAIN = credentials.credentials['domain']
-        self.USERNAME = credentials.credentials['email']
-        self.PASSWORD = credentials.credentials['password']
+        # self.SUBDOMAIN = credentials.credentials['domain']
+        # self.USERNAME = credentials.credentials['email']
+        # self.PASSWORD = credentials.credentials['password']
 
     def getCredentials(self):
         self.USERNAME = input('Username: ')
-        
         try:
             self.PASSWORD = getpass.getpass('Password: ')
-            print(self.USERNAME, self.PASSWORD)
-
         except Exception as error:
-            print(self.USERNAME, self.PASSWORD)
             print('ERROR', error)
 
 
@@ -41,10 +37,16 @@ class Tickets:
     def request(self, API, payload, credentials):
         url = os.path.join(self.SUBDOMAIN, API)
         response = requests.get(url, auth=credentials, params=payload)
-        if response.status_code != 200:
-            print(response.status_code)
-            return 'Error'
-        return response.json()
+        if response.status_code == 401:
+            print('Invalid Credentials')
+            quit()
+        if response.status_code == 404:
+            print('Ticket(s) not found.')
+            return
+        if response.status_code == 429:
+            print('Resource limit exhausted. Please try again later.')
+        if response.status_code == 200:
+            return response.json()
     
 
     def getSingleTicket(self, credentials, ticket_id):
@@ -56,13 +58,13 @@ class Tickets:
         
         elif change == 1:
             ticketsData = self.request('api/v2/tickets.json', credentials=credentials, payload = {"page[size]": "25", "page[after]": self.after})
-            if ticketsData['meta']['has_more'] == False:
+            if ticketsData and ticketsData['meta']['has_more'] == False:
                 print('No more tickets to display.\n')
                 return
 
         elif change == -1:
             ticketsData = self.request('api/v2/tickets.json', credentials=credentials, payload = {"page[size]": "25", "page[before]": self.before})
-            if ticketsData['meta']['has_more'] == False:
+            if ticketsData and ticketsData['meta']['has_more'] == False:
                 print('No more previous tickets to display.\n')
                 return
 
@@ -79,27 +81,47 @@ class Display:
         self.allTickets = Tickets()
         self.credentials = (self.Auth.USERNAME, self.Auth.PASSWORD)
         self.allTickets.getTickets(self.credentials, change = 0)
-        self.displayTickets(self.allTickets.current_tickets)
-        self.displayMenu()
+        if self.allTickets.current_tickets != None:
+            self.displayTickets(self.allTickets.current_tickets)
+            self.displayMenu()
     
     def displayMenu(self):
         while True:
             print('(1) - Next page \n(2) - Previous page \n(3) - Select Ticket by Ticket ID \n')
             choice = input('Enter Choice: ')
 
-            if int(choice) == 1:
+            try:
+                choice = int(choice)
+            except ValueError:
+                print('Please enter an integer')
+                continue
+
+            if choice == 1:
                 self.allTickets.getTickets(self.credentials, change = 1)
                 self.displayTickets(self.allTickets.current_tickets)
 
-            elif int(choice) == 2:
+            elif choice == 2:
                 self.allTickets.getTickets(self.credentials, change = -1)
                 self.displayTickets(self.allTickets.current_tickets)
             
-            elif int(choice) == 3:
+            elif choice == 3:
                 ticket_id = input('Enter Ticket ID: ')
+                try:
+                    ticket_id = int(ticket_id)
+                except ValueError:
+                    print('Please enter an integer')
+                    continue
+
                 print('\n')
                 ticket = self.allTickets.getSingleTicket(self.credentials, ticket_id)
-                self.displaySingleTicket(ticket)
+                if ticket != None:
+                    self.displaySingleTicket(ticket)
+                else:
+                    self.displayTickets(self.allTickets.current_tickets)
+            
+            else:
+                print('Please enter a valid choice between 1 and 3')
+                continue
                 
 
     
@@ -154,9 +176,6 @@ class Display:
         print('\n')
         print(f'Description: {description}')
         print('\n')
-
-
-
 
 
 if __name__ == '__main__':
