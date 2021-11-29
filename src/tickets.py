@@ -1,11 +1,11 @@
-import credentials
+import env
 import requests
 import os
 
 class Tickets:
 
     def __init__(self):
-        self.SUBDOMAIN = credentials.credentials['domain']
+        self.SUBDOMAIN = env.credentials['domain']
         self.current_tickets = None
         self.after = None
         self.before = None

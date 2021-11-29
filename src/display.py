@@ -49,8 +49,7 @@ class Display:
             
             else:
                 print('Please enter a valid choice between 1 and 3')
-                continue
-                
+                continue                
 
     
     def printTicket(self, ticket):
@@ -60,17 +59,16 @@ class Display:
         subject = ticket['subject']
         created_at = str(datetime.strptime(ticket['created_at'], '%Y-%m-%dT%H:%M:%SZ'))
 
-        print_format = "{:{fill}{align}{width}}"
+        print_format = '{:{fill}{align}{width}}'
         print(
             print_format.format(ticket_id, fill='', align='<', width=15) + 
             print_format.format(subject, fill='', align='<', width=80) + 
             print_format.format(created_at, fill='', align='<', width=25) +
             print_format.format(submitted_by, fill='', align='<', width=15) +
             print_format.format(assigned_to, fill='', align='<', width=15))
-        
     
     def displayTickets(self, tickets):
-        print_format = "{:{fill}{align}{width}}"
+        print_format = '{:{fill}{align}{width}}'
         print(
             print_format.format('Ticket ID', fill='', align='<', width=15) + 
             print_format.format('Subject', fill='', align='<', width=80) + 
@@ -91,6 +89,7 @@ class Display:
         updated_at = str(datetime.strptime(ticket['updated_at'], '%Y-%m-%dT%H:%M:%SZ'))
         description = ticket['description']
         status = ticket['status']
+
         print(f'Ticket ID: {ticket_id}')
         print(f'Subject: {subject}')
         print(f'Status: {status}')

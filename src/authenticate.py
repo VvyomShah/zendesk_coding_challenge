@@ -8,10 +8,6 @@ class Authenticate:
         self.PASSWORD = None
         self.getCredentials()
 
-        # self.SUBDOMAIN = credentials.credentials['domain']
-        # self.USERNAME = credentials.credentials['email']
-        # self.PASSWORD = credentials.credentials['password']
-
     def getCredentials(self):
         self.USERNAME = input('Username: ')
         try:
