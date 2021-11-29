@@ -1,6 +1,6 @@
 # Readme
 
-This project is a Ticket Viewer using the Zendesk API for the Summer 2022 Intern Coding Challenge
+This project is a CLI based Ticket Viewer using the Zendesk API for the Summer 2022 Intern Coding Challenge
 
 ## Table of Contents
 
